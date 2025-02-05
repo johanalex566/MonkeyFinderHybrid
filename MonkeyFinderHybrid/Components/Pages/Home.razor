@@ -1,27 +1,26 @@
 ﻿@page "/"
 @inject MonkeyService monkeyService
 
-<div>
-    <table>
-        <thead>
-            <tr>
-                <th>Imagen</th>
-                <th>Nombre</th>
-                <th>Ubicación</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var monkey in monkeys)
-            {
-                <tr>
-                    <td><img src="@monkey.Image" alt="@monkey.Name" width="100" /></td>
-                    <td>@monkey.Name</td>
-                    <td>@monkey.Location</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+@if (monkeys is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <ul class="card-list">
+        @foreach (var monkey in monkeys)
+        {
+            <li class="card-item">
+                <img class="card-image" src="@monkey.Image" />
+                <div class="card-content">
+                    <h2>@monkey.Name</h2>
+                    <p>@monkey.Location</p>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
 
 @code {
     private List<Monkey>? monkeys = new();
