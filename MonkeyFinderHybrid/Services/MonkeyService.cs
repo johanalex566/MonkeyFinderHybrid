@@ -33,4 +33,21 @@ public class MonkeyService
         }
         return monkeyList;
     }
+
+    public List<Monkey> AddMonkey(Monkey monkey)
+    {
+        monkeyList.Add(monkey);
+        return monkeyList;
+    }
+
+    public Monkey FindMonkeyByName(string name)
+    {
+        var monkey = monkeyList.FirstOrDefault(m => m.Name == name);
+
+        if (monkey is null)
+        {
+            throw new Exception("Monkey not found");
+        }
+        return monkey;
+    }
 }
