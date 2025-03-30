@@ -13,7 +13,7 @@
     </div>
     <div class="detailscard-body">
         <button class="detailsbutton-yellow">Show on Map</button>
-        <button class="detailsbutton-yellow">Rate This Monkey!</button>
+        <button class="detailsbutton-yellow" @onclick="AddRating">Rate This Monkey!</button>
         <p class="detailsdescription">@monkey.Details</p>
         <p class="detailslocation"><strong>Location:</strong> @monkey.Location</p>
         <p class="detailspopulation"><strong>Population:</strong> @monkey.Population</p>
@@ -36,6 +36,10 @@
     private void CloseWindow()
     {
         NavManager.NavigateTo("/");
+    }
+    private void AddRating()
+    {
+        ((Application)app).Windows[0].Page!.Navigation.PushModalAsync(new MonkeyRatingPage());
     }
 
 }
