@@ -1,10 +1,13 @@
 ﻿@page "/"
 @inject MonkeyService monkeyService
 @inject IDialogService DialogService
-@inject NavigationManager NavManager;
+@inject NavigationManager NavManager
+@inject IGeolocation geolocation
 
 <div>
     <button class="button-yellow" @onclick="AddMonkey">Add new Moneky</button>
+    <button class="button-yellow" @onclick="FindMonkey">Find Closest Monkey</button>
+
 
     @if (monkeys is null)
     {
@@ -58,5 +61,47 @@
     private void GoToDetails(Monkey monkey)
     {
         NavManager.NavigateTo($"details/{monkey.Name}");
+    }
+
+
+    public async Task FindMonkey()
+    {
+        try
+        {
+            // Get cached location, else get real location.
+            var location = await geolocation.GetLastKnownLocationAsync();
+            if (location is null)
+            {
+                location = await geolocation.GetLocationAsync(new GeolocationRequest
+                    {
+                        DesiredAccuracy = GeolocationAccuracy.Medium,
+                        Timeout = TimeSpan.FromSeconds(30)
+                    });
+            }
+
+            // Find closest monkey to us
+            var closestMonkey = monkeys.OrderBy(m => location.CalculateDistance(
+                new Location(m.Latitude, m.Longitude), DistanceUnits.Miles))
+                .FirstOrDefault();
+
+            var closestMonkeyMessage = string.Empty;
+
+            if (closestMonkey is not null)
+            {
+                closestMonkeyMessage = $"{closestMonkey.Name} is closest, this monkey is in {closestMonkey.Location}";
+            }
+            else
+            {
+                closestMonkeyMessage = "The closest monkey could not be determined!";
+            }
+
+            await ((Application)app).Windows[0].Page!.DisplayAlert("Closest Monkey",
+                closestMonkeyMessage, "OK");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Unable to query location: {ex.Message}");
+            await ((Application)app).Windows[0].Page!.DisplayAlert("Error!", ex.Message, "OK");
+        }
     }
 }
