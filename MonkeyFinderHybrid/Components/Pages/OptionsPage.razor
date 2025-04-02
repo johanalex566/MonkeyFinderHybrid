@@ -2,6 +2,18 @@
 
 <h3>OptionsPage</h3>
 
+<button class="button-yellow" @onclick="CheckInternet">Check Internet</button>
+
+
 @code {
+
+    public async Task CheckInternet()
+    {
+        var hasInternet = Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+        var internetType = Connectivity.Current.ConnectionProfiles.FirstOrDefault();
+
+        await ((Application)app).Windows[0].Page!
+        .DisplayAlert("Internet", $"Has Internet: {hasInternet}, Internet Type: {internetType}", "OK");
+    }
 
 }
